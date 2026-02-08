@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unhas de Ouro | Agendamento</title>
+    <!-- Bibliotecas Necessárias -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com">
+    
+    <style>
+        /* Design Unhas de Ouro */
+        :root {
+            --ouro: #D4AF37;
+            --ouro-dark: #AA8400;
+            --preto: #121212;
+            --grafite: #1f1f1f;
+        }
+
+        body {
+            background-color: var(--preto);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: var(--grafite);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid var(--ouro);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--ouro);
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        .campo {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            color: var(--ouro);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--ouro);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--ouro-dark), var(--ouro));
+            color: black;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px var(--ouro);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Unhas de Ouro</h1>
+    <div class="subtitle">Design e Sofisticação</div>
+
+    <div class="campo">
+        <label>Seu Nome</label>
+        <input type="text" id="nome" placeholder="Ex: Maria Silva">
+    </div>
+
+    <div class="campo">
+        <label>Serviço Desejado</label>
+        <select id="servico">
+            <option value="Manicure Simples">Manicure Simples</option>
+            <option value="Pé e Mão">Pé e Mão</option>
+            <option value="Alongamento em Fibra">Alongamento em Fibra</option>
+            <option value="Banho de Gel">Banho de Gel</option>
+            <option value="Esmaltação em Gel">Esmaltação em Gel</option>
+        </select>
+    </div>
+
+    <div class="campo">
+        <label>Data (Terça a Domingo)</label>
+        <input type="text" id="data" placeholder="Escolha o dia">
+    </div>
+
+    <div class="campo">
+        <label>Horário (08:00 às 18:00)</label>
+        <select id="hora"></select>
+    </div>
+
+    <button onclick="enviarWhatsApp()">CONFIRMAR AGENDAMENTO</button>
+</div>
+
+<!-- Scripts de Funcionamento -->
+<script src="https://cdn.jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/dist/l10n/pt.js"></script>
+
+<script>
+    // 1. Gerar os horários de 8h às 18h
+    const selectHora = document.getElementById('hora');
+    for (let h = 8; h <= 18; h++) {
+        let horaFormatada = h.toString().padStart(2, '0') + ':00';
+        selectHora.add(new Option(horaFormatada, horaFormatada));
+    }
+
+    // 2. Configurar o Calendário (Bloqueia Segunda-feira)
+    flatpickr("#data", {
+        locale: "pt",
+        dateFormat: "d/m/Y",
+        disable: [
+            function(date) {
+                return (date.getDay() === 1); // 1 representa Segunda-feira
+            }
+        ],
+        minDate: "today"
+    });
+
+    // 3. Função para enviar ao WhatsApp
+    function enviarWhatsApp() {
+        const nome = document.getElementById('nome').value;
+        const servico = document.getElementById('servico').value;
+        const data = document.getElementById('data').value;
+        const hora = document.getElementById('hora').value;
+        const telefone = "5511946596044"; // Seu número configurado
+
+        if (!nome || !data) {
+            alert("Por favor, preencha seu nome e escolha uma data!");
+            return;
+        }
+
+        const mensagem = `Olá! Me chamo *${nome}* e gostaria de agendar na *Unhas de Ouro*.\n\n✨ *Serviço:* ${servico}\n📅 *Data:* ${data}\n⏰ *Horário:* ${hora}`;
+        
+        const url = `https://wa.me{telefone}?text=${encodeURIComponent(mensagem)}`;
+        
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
