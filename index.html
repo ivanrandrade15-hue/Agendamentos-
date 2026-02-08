@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unhas de Ouro - Agendamento</title>
+    <!-- Flatpickr para Calendário Moderno -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com">
+    
+    <style>
+        :root {
+            --gold: #d4af37; /* Dourado Metálico */
+            --dark-gold: #aa8400;
+            --white: #ffffff;
+            --bg: #fafafa;
+        }
+        body { font-family: 'Playfair Display', serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2); width: 100%; max-width: 400px; border: 1px solid var(--gold); text-align: center; }
+        h1 { color: var(--gold); font-size: 24px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
+        p { color: #666; font-size: 14px; margin-bottom: 30px; }
+        .campo { text-align: left; margin-bottom: 20px; }
+        label { display: block; font-weight: bold; color: var(--dark-gold); margin-bottom: 8px; font-size: 12px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+        button { background: linear-gradient(135deg, var(--gold), var(--dark-gold)); color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Unhas de Ouro</h1>
+    <p>Excelência em cada detalhe</p>
+    
+    <div class="campo">
+        <label>Seu Nome:</label>
+        <input type="text" id="nome" placeholder="Digite seu nome completo">
+    </div>
+
+    <div class="campo">
+        <label>Escolha a Data:</label>
+        <input type="text" id="calendario" placeholder="Selecione o dia">
+    </div>
+
+    <div class="campo">
+        <label>Horário disponível:</label>
+        <select id="hora"></select>
+    </div>
+
+    <button onclick="enviarAgendamento()">RESERVAR HORÁRIO</button>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/dist/l10n/pt.js"></script>
+
+<script>
+    // 1. Configuração dos Horários (08:00 às 18:00)
+    const selectHora = document.getElementById('hora');
+    for (let h = 8; h <= 18; h++) {
+        let hora = h.toString().padStart(2, '0') + ':00';
+        selectHora.add(new Option(hora, hora));
+    }
+
+    // 2. Calendário Flatpickr (Bloqueia Segunda-feira automaticamente)
+    flatpickr("#calendario", {
+        locale: "pt",
+        dateFormat: "d/m/Y",
+        minDate: "today",
+        disable: [
+            function(date) {
+                return (date.getDay() === 1); // Desabilita Segunda (1)
+            }
+        ]
+    });
+
+    // 3. Envio para o WhatsApp
+    function enviarAgendamento() {
+        const nome = document.getElementById('nome').value;
+        const data = document.getElementById('calendario').value;
+        const hora = document.getElementById('hora').value;
+        const telefoneManicure = "5511946596044";
+
+        if (!nome || !data) {
+            alert("Por favor, preencha seu nome e a data!");
+            return;
+        }
+
+        const mensagem = `Olá! Me chamo *${nome}* e gostaria de agendar um horário na *Unhas de Ouro*.\n\n📅 *Data:* ${data}\n⏰ *Horário:* ${hora}`;
+        
+        // Codifica a mensagem para a URL
+        const linkWhatsapp = `https://api.whatsapp.com{telefoneManicure}&text=${encodeURIComponent(mensagem)}`;
+        
+        // Abre o WhatsApp
+        window.open(linkWhatsapp, '_blank');
+    }
+</script>
+
+</body>
+</html>
