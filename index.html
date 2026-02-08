@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unhas de Ouro | Agendamento</title>
+    <!-- Flatpickr (Calendário) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com">
+    
+    <style>
+        :root {
+            --ouro: #D4AF37;
+            --ouro-brilho: #F9E586;
+            --preto: #121212;
+            --cinza: #1f1f1f;
+        }
+
+        body {
+            background-color: var(--preto);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: var(--cinza);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--ouro);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--ouro);
+            font-size: 26px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: #aaa;
+            margin-bottom: 25px;
+        }
+
+        .campo {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 10px;
+            color: var(--ouro);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, var(--ouro), var(--ouro-brilho));
+            color: black;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Unhas de Ouro</h1>
+    <div class="subtitle">Agendamento Exclusivo</div>
+
+    <div class="campo">
+        <label>Nome da Cliente</label>
+        <input type="text" id="nome" placeholder="Seu nome completo">
+    </div>
+
+    <div class="campo">
+        <label>Serviço Desejado</label>
+        <select id="servico">
+            <option value="Manicure Simples">Manicure Simples</option>
+            <option value="Pé e Mão">Pé e Mão</option>
+            <option value="Alongamento em Fibra">Alongamento em Fibra</option>
+            <option value="Banho de Gel">Banho de Gel</option>
+            <option value="Esmaltação em Gel">Esmaltação em Gel</option>
+        </select>
+    </div>
+
+    <div class="campo">
+        <label>Data (Terça a Domingo)</label>
+        <input type="text" id="data" placeholder="Selecione o dia">
+    </div>
+
+    <div class="campo">
+        <label>Horário (08:00 às 18:00)</label>
+        <select id="hora"></select>
+    </div>
+
+    <button onclick="enviarWhatsApp()">Confirmar no WhatsApp</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/dist/l10n/pt.js"></script>
+
+<script>
+    // Gerar horários (08h às 18h)
+    const selectHora = document.getElementById('hora');
+    for (let h = 8; h <= 18; h++) {
+        let hf = h.toString().padStart(2, '0') + ':00';
+        selectHora.add(new Option(hf, hf));
+    }
+
+    // Calendário (Bloqueia Segundas)
+    flatpickr("#data", {
+        locale: "pt",
+        dateFormat: "d/m/Y",
+        disable: [ (date) => date.getDay() === 1 ],
+        minDate: "today"
+    });
+
+    // FUNÇÃO CORRIGIDA PARA O SEU NÚMERO
+    function enviarWhatsApp() {
+        const nome = document.getElementById('nome').value;
+        const servico = document.getElementById('servico').value;
+        const data = document.getElementById('data').value;
+        const hora = document.getElementById('hora').value;
+        
+        // Número limpo conforme padrão da API
+        const telefone = "5511946596044"; 
+
+        if (!nome || !data) {
+            alert("Por favor, preencha o nome e escolha a data!");
+            return;
+        }
+
+        const msg = `Olá! Me chamo *${nome}* e gostaria de agendar um horário na *Unhas de Ouro*.\n\n✨ *Serviço:* ${servico}\n📅 *Data:* ${data}\n⏰ *Horário:* ${hora}`;
+        
+        // O link wa.me direto evita o erro de "wa.me{telefone}" que apareceu na imagem
+        const url = "https://wa.me" + telefone + "?text=" + encodeURIComponent(msg);
+        
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
