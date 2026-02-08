@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unhas de Ouro | Agendamento</title>
+
+    <style>
+        :root { 
+            --ouro: #D4AF37; 
+            --preto: #121212; 
+            --cinza: #1f1f1f; 
+        }
+
+        body { 
+            background: var(--preto); 
+            color: white; 
+            font-family: sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+        }
+
+        .box { 
+            background: var(--cinza); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 2px solid var(--ouro); 
+            width: 90%; 
+            max-width: 350px; 
+            text-align: center; 
+            box-shadow: 0 0 25px rgba(212,175,55,0.4); 
+        }
+
+        h1 { 
+            color: var(--ouro); 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            margin-bottom: 5px; 
+            font-size: 24px; 
+        }
+
+        .campo { 
+            text-align: left; 
+            margin-bottom: 15px; 
+        }
+
+        label { 
+            display: block; 
+            font-size: 11px; 
+            color: var(--ouro); 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            text-transform: uppercase; 
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            background: #2a2a2a; 
+            border: 1px solid #444; 
+            border-radius: 8px; 
+            color: white; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            outline: none; 
+        }
+
+        button { 
+            width: 100%; 
+            padding: 18px; 
+            background: linear-gradient(45deg, #aa8400, var(--ouro)); 
+            color: black; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            text-transform: uppercase; 
+            transition: 0.3s; 
+        }
+
+        button:hover { 
+            background: #f9e586; 
+            transform: translateY(-2px); 
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>Unhas de Ouro</h1>
+    <p style="font-size: 10px; color: #888; margin-bottom: 25px;">
+        AGENDAMENTO DE LUXO
+    </p>
+
+    <div class="campo">
+        <label>Nome Completo</label>
+        <input type="text" id="cliente" placeholder="Digite seu nome">
+    </div>
+
+    <div class="campo">
+        <label>Serviço</label>
+        <select id="servico">
+            <option>Manicure Simples</option>
+            <option>Pé e Mão</option>
+            <option>Alongamento em Fibra</option>
+            <option>Banho de Gel</option>
+        </select>
+    </div>
+
+    <div class="campo">
+        <label>Data</label>
+        <input type="date" id="data">
+    </div>
+
+    <div class="campo">
+        <label>Horário</label>
+        <select id="hora"></select>
+    </div>
+
+    <button type="button" onclick="finalizar()">
+        Confirmar no WhatsApp
+    </button>
+</div>
+
+<script>
+    // Gerar horários (08h às 18h)
+    const sel = document.getElementById('hora');
+    for (let h = 8; h <= 18; h++) {
+        let f = h.toString().padStart(2, '0') + ":00";
+        sel.add(new Option(f, f));
+    }
+
+    function finalizar() {
+        const n = document.getElementById('cliente').value.trim();
+        const s = document.getElementById('servico').value;
+        const d = document.getElementById('data').value;
+        const h = document.getElementById('hora').value;
+
+        if (!n || !d) {
+            alert("⚠️ Preencha seu nome e a data!");
+            return;
+        }
+
+        // Bloqueio de segunda-feira
+        const dObj = new Date(d + 'T00:00:00');
+        if (dObj.getDay() === 1) {
+            alert("❌ Não atendemos às segundas-feiras!");
+            return;
+        }
+
+        const dataBR = d.split('-').reverse().join('/');
+        const tel = "5511946596044";
+
+        const msg =
+`Olá! Me chamo *${n}* e quero agendar na *Unhas de Ouro*.
+
+✨ *Serviço:* ${s}
+📅 *Data:* ${dataBR}
+⏰ *Horário:* ${h}`;
+
+        const urlFinal =
+            "https://api.whatsapp.com/send?phone=" +
+            tel +
+            "&text=" +
+            encodeURIComponent(msg);
+
+        window.open(urlFinal, "_blank");
+    }
+</script>
+
+</body>
+</html>
