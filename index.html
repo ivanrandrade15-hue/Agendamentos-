@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unhas de Ouro | Agendamento</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --ouro:#D4AF37;
+    --ouro-claro:#f5e6a1;
+    --preto:#0c0c0c;
+    --cinza:#1a1a1a;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at top, #2a2200, #000),
+        linear-gradient(135deg,#000,#111);
+    font-family:'Poppins',sans-serif;
+    color:#fff;
+}
+
+.box{
+    background:linear-gradient(160deg,#1c1c1c,#0e0e0e);
+    padding:35px 30px;
+    width:92%;
+    max-width:380px;
+    border-radius:25px;
+    border:2px solid var(--ouro);
+    box-shadow:
+        0 0 30px rgba(212,175,55,.35),
+        inset 0 0 15px rgba(212,175,55,.15);
+}
+
+h1{
+    margin:0;
+    text-align:center;
+    font-size:26px;
+    letter-spacing:4px;
+    color:var(--ouro);
+    text-transform:uppercase;
+}
+
+.sub{
+    text-align:center;
+    font-size:11px;
+    letter-spacing:3px;
+    color:#aaa;
+    margin-bottom:30px;
+}
+
+.campo{margin-bottom:18px}
+
+label{
+    display:block;
+    font-size:11px;
+    letter-spacing:2px;
+    color:var(--ouro);
+    margin-bottom:6px;
+    text-transform:uppercase;
+}
+
+input,select{
+    width:100%;
+    padding:14px;
+    background:#101010;
+    border:1px solid #333;
+    border-radius:10px;
+    color:#fff;
+    font-size:15px;
+    outline:none;
+}
+
+input:focus,select:focus{
+    border-color:var(--ouro);
+    box-shadow:0 0 10px rgba(212,175,55,.4);
+}
+
+button{
+    width:100%;
+    padding:18px;
+    margin-top:15px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(45deg,#8a6a00,var(--ouro),#f9e79f);
+    color:#000;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:2px;
+    cursor:pointer;
+    text-transform:uppercase;
+}
+
+footer{
+    text-align:center;
+    font-size:10px;
+    color:#777;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>Unhas de Ouro</h1>
+    <div class="sub">AGENDAMENTO DE LUXO</div>
+
+    <div class="campo">
+        <label>Nome Completo</label>
+        <input type="text" id="cliente" placeholder="Digite seu nome">
+    </div>
+
+    <div class="campo">
+        <label>Serviço</label>
+        <select id="servico">
+            <option>Manicure Simples</option>
+            <option>Pé e Mão</option>
+            <option>Alongamento em Fibra</option>
+            <option>Banho de Gel</option>
+        </select>
+    </div>
+
+    <div class="campo">
+        <label>Data</label>
+        <input type="date" id="data">
+    </div>
+
+    <div class="campo">
+        <label>Horário</label>
+        <select id="hora"></select>
+    </div>
+
+    <button onclick="finalizar()">Confirmar no WhatsApp</button>
+
+    <footer>✨ Atendimento exclusivo ✨</footer>
+</div>
+
+<script>
+const horaSelect = document.getElementById("hora");
+const dataInput = document.getElementById("data");
+
+/* BUSCA HORÁRIOS OCUPADOS */
+function getHorarios(){
+    return JSON.parse(localStorage.getItem("horariosOcupados")) || {};
+}
+
+/* SALVA HORÁRIO COMO OCUPADO */
+function salvarHorario(data, hora){
+    const horarios = getHorarios();
+    if(!horarios[data]) horarios[data] = [];
+    horarios[data].push(hora);
+    localStorage.setItem("horariosOcupados", JSON.stringify(horarios));
+}
+
+/* GERA HORÁRIOS DISPONÍVEIS */
+function gerarHorarios(data){
+    horaSelect.innerHTML = "";
+
+    const horarios = getHorarios();
+    const ocupados = horarios[data] || [];
+
+    for(let h = 8; h <= 18; h++){
+        const hora = h.toString().padStart(2,"0") + ":00";
+        if(!ocupados.includes(hora)){
+            horaSelect.add(new Option(hora, hora));
+        }
+    }
+
+    if(horaSelect.options.length === 0){
+        horaSelect.add(new Option("Sem horários disponíveis", ""));
+    }
+}
+
+/* ATUALIZA AO ESCOLHER DATA */
+dataInput.addEventListener("change", ()=>{
+    gerarHorarios(dataInput.value);
+});
+
+/* CONFIRMAR */
+function finalizar(){
+    const nome = cliente.value.trim();
+    const servico = servicoSelect = document.getElementById("servico").value;
+    const data = dataInput.value;
+    const hora = horaSelect.value;
+
+    if(!nome || !data || !hora){
+        alert("⚠️ Preencha todos os campos!");
+        return;
+    }
+
+    const dObj = new Date(data+"T00:00:00");
+    if(dObj.getDay() === 1){
+        alert("❌ Não atendemos às segundas-feiras!");
+        return;
+    }
+
+    /* BLOQUEIA AUTOMATICAMENTE */
+    salvarHorario(data, hora);
+
+    const dataBR = data.split("-").reverse().join("/");
+    const tel = "5511946596044";
+
+    const msg = `Olá! Me chamo *${nome}* e quero agendar na *Unhas de Ouro*.
+
+✨ *Serviço:* ${servico}
+📅 *Data:* ${dataBR}
+⏰ *Horário:* ${hora}`;
+
+    window.open(
+        "https://api.whatsapp.com/send?phone="+tel+"&text="+encodeURIComponent(msg),
+        "_blank"
+    );
+
+    gerarHorarios(data);
+}
+</script>
+
+</body>
+</html>
